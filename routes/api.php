@@ -1,9 +1,22 @@
+<?php
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\GoogleFormRecordController;
 use App\Http\Controllers\CompanyProfileController;
+use App\Http\Controllers\AuthController;
+
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth');
+
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    return $request->user();
+});
 
 Route::prefix('users')->group(function () {
     Route::get('/', [UserController::class, 'index']);
@@ -52,3 +65,5 @@ Route::prefix('company-profiles')->group(function () {
     Route::put('{companyProfile}', [CompanyProfileController::class, 'update']);
     Route::delete('{companyProfile}', [CompanyProfileController::class, 'destroy']);
 });
+
+
