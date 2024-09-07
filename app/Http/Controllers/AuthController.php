@@ -26,14 +26,18 @@ class AuthController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => $validated['role'],
+            'role' => $request->role,
         ]);
 
         // Create a token for the user
         $token = $user->createToken('auth_token')->plainTextToken;
 
         // Return the token with the user data
-        return response()->json($user, 201);
+        return response()->json([
+            'access_token' => $token,
+            'token_type' => 'Bearer',
+            'user'=> $user
+        ]);
     }
 
     // Log in an existing user
@@ -62,6 +66,7 @@ class AuthController extends Controller
         return response()->json([
             'access_token' => $token,
             'token_type' => 'Bearer',
+            'user'=> $user
         ]);
     }
 
@@ -69,7 +74,9 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         // Revoke all tokens for the authenticated user
-        $request->user()->tokens()->delete();
+        if($request->user()){
+            $request->user()->tokens()->delete();
+        }
 
         return response()->json([
             'message' => 'Logged out successfully'
